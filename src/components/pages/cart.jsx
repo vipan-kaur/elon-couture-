@@ -13,12 +13,13 @@ const totalQuantity = cartItems.reduce(
   (sum, item) => sum + item.quantity,
   0
 );
+console.log(totalQuantity)
   return (<>
 
     <div className="min-h-screen bg-gray-100 p-6 md:p-12">
+     
       <Typography variant="h6" sx={{ fontWeight: 'bold' }} className="flex font-bold text-gray-800 justify-center items-center pb-10" >
-        Your Shopping Cart
-       
+   {totalQuantity==0?`Your cart is empty. Start adding items you love!}`:`your shopping cart`}
       </Typography>
 
       <div className="flex flex-col gap-6">
@@ -71,8 +72,7 @@ const totalQuantity = cartItems.reduce(
 
         {/* Summary */}
         <div className="flex justify-center items-center w-full">
-       
-        <div className="bg-white p-6 w-1/2  rounded-lg shadow space-y-4 h-fit ">
+       {totalQuantity>0 &&  <div className="bg-white p-6 w-1/2  rounded-lg shadow space-y-4 h-fit ">
           <Typography variant="h6" className="font-bold">
             Order Summary
           </Typography>
@@ -106,7 +106,8 @@ const totalQuantity = cartItems.reduce(
             Proceed to Checkout
           </Button>
           </div>
-          </div>
+          </div>}
+       
         </div>
       </div>
     </div>

@@ -1,212 +1,284 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Checkbox, FormControlLabel } from "@mui/material";
-const Login = () => {
- const [login, setLogin] = useState(true)
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Paper,
+  Container,
+  Tab,
+  Tabs,
+  InputAdornment,
+  IconButton,
+  Alert,
+  CircularProgress
+} from "@mui/material";
+import {
+  Email,
+  Lock,
+  Person,
+  Visibility,
+  VisibilityOff
+} from "@mui/icons-material";
 
-  const [formdata, setFormdata] = useState({
+const Login = () => {
+  const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: ""
-  })
-
-  const navigate = useNavigate()
-
-  const handleClick = () => {
-    setLogin(prev => !prev)
-  }
-
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    console.log("name",name)
-    console.log("value",value)
-    setFormdata(prev => ({
-      ...prev,
-      [name]: value 
-      
-    }))
-  }
-
-const handleSubmit = (e) => {
-  e.preventDefault()
-
- 
-
-if (!login) {
-  if (!formdata.name || !formdata.email || !formdata.password || !formdata.confirmPassword) {
-    alert("All fields required");
-    return;
-  }
-
-  if (formdata.password !== formdata.confirmPassword) {
-    alert("Passwords do not match");
-    return;
-  }
-
-  const users = JSON.parse(localStorage.getItem("logininfo")) || [];
-
-  const userExists = users.some(
-    (user) => user.email === formdata.email
-  );
-
-  if (userExists) {
-    alert("User already exists");
-    return;
-  }
-
-  users.push({
-    name: formdata.name,
-    email: formdata.email,
-    password: formdata.password,
   });
 
-  localStorage.setItem("logininfo", JSON.stringify(users));
+  const navigate = useNavigate();
 
-  alert("Signup successful");
-  setLogin(true);
-  return;
-}
+  const handleModeChange = (event, newValue) => {
+    setIsLogin(newValue === 0);
+    setError("");
+  };
 
+  const handleChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+    if (error) setError("");
+  };
 
-  // ===== LOGIN =====
-  if (!formdata.email || !formdata.password) {
-    alert("All fields required")
-    return
-  }
+  const validate = () => {
+    if (isLogin) {
+      if (!formData.email || !formData.password) {
+        setError("Email and password are required");
+        return false;
+      }
+    } else {
+      if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+        setError("All fields are required");
+        return false;
+      }
+      if (formData.password !== formData.confirmPassword) {
+        setError("Passwords do not match");
+        return false;
+      }
+    }
+    return true;
+  };
 
-  const saveddata = JSON.parse(localStorage.getItem("logininfo"))
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
 
-  if (!saveddata) {
-    alert("No user found. Please sign up.")
-    return
-  }
+    setLoading(true);
+    setError("");
 
-if (!formdata.email || !formdata.password) {
-  alert("All fields required");
-  return;
-}
+    try {
+      const url = isLogin
+        ? "http://localhost:3000/api/auth/login"
+        : "http://localhost:3000/api/auth/signup";
 
-const users = JSON.parse(localStorage.getItem("logininfo")) || [];
+      const payload = isLogin
+        ? { email: formData.email, password: formData.password }
+        : { name: formData.name, email: formData.email, password: formData.password };
 
-if (users.length === 0) {
-  alert("No user found. Please sign up.");
-  return;
-}
+      const response = await axios.post(url, payload);
 
-const loggedInUser = users.find(
-  (user) =>
-    user.email === formdata.email &&
-    user.password === formdata.password
-);
-
-if (loggedInUser) {
-  alert("Login successful");
-
-  // optional: store logged-in user
-  localStorage.setItem("users", JSON.stringify(loggedInUser));
-
-  navigate("/");
-} else {
-  alert("Invalid email or password");
-}
-
-}
-
-
+      if (isLogin) {
+        // Store user data if returned
+        localStorage.setItem("user", JSON.stringify(response.data.user || response.data));
+        navigate("/profile");
+      } else {
+        alert("Signup successful! Please login.");
+        setIsLogin(true);
+        setFormData(prev => ({ ...prev, password: "", confirmPassword: "" }));
+      }
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || "Authentication failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="h-full mt-5 flex items-center w-full justify-center">
-      <div className="flex w-4/5 md:w-2/5  ">
+    <Box
+      sx={{
+        minHeight: "90vh",
+        display: "flex",
+        alignItems: "center",
+        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+        py: 4
+      }}
+    >
+      <Container maxWidth="sm">
+        <Paper
+          elevation={10}
+          sx={{
+            borderRadius: 4,
+            overflow: "hidden",
+            backdropFilter: "blur(10px)",
+            backgroundColor: "rgba(255, 255, 255, 0.9)"
+          }}
+        >
+          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+            <Tabs
+              value={isLogin ? 0 : 1}
+              onChange={handleModeChange}
+              variant="fullWidth"
+              textColor="primary"
+              indicatorColor="primary"
+            >
+              <Tab label="Login" sx={{ py: 3, fontWeight: "bold", fontSize: "1.1rem" }} />
+              <Tab label="Signup" sx={{ py: 3, fontWeight: "bold", fontSize: "1.1rem" }} />
+            </Tabs>
+          </Box>
 
-        
+          <Box sx={{ p: { xs: 3, md: 5 } }}>
+            <Typography variant="h4" fontWeight="bold" color="primary.dark" gutterBottom align="center">
+              {isLogin ? "Welcome Back" : "Create Account"}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 4 }}>
+              {isLogin ? "Please enter your details to sign in" : "Join us to get started with ELON COUTURE"}
+            </Typography>
 
-        <div className="w-full  shadow-2xl  pb-20 ">
-            <div>
-          <button onClick={handleClick} className={`text-3xl w-1/2  p-5 font-semibold text-sky-950 mb-5 ${login?"bg-gray-200":"bg-white"}`}>
-            Login
-          </button>
-          <button  onClick={handleClick}className={`text-3xl w-1/2  p-5 font-semibold text-sky-950 mb-5 ${!login?"bg-gray-200":"bg-white"}`}>
-            Sign up
-          </button>
-</div>
-          <form className="space-y-5 px-10 pb-10" onSubmit={handleSubmit}>
-               <div className="flex items-start gap-2">
-  <input
-    type="checkbox"
-    id="remember"
-    className="mt-1 "
-  />
-  <label htmlFor="remember" className="text-sm text-gray-400 cursor-pointer">
-    Remember me – I want ELON COUTURE  to personalize my shopping experience
-  </label>
-</div>
+            {error && (
+              <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+                {error}
+              </Alert>
+            )}
 
-            {!login && (
-              <div>
-                <label className="text-gray-600"></label>
-                <input
-                  type="text"
+            <form onSubmit={handleSubmit}>
+              {!isLogin && (
+                <TextField
+                  fullWidth
                   name="name"
-                  placeholder='User Name*'
+                  label="Full Name"
+                  placeholder="John Doe"
+                  value={formData.name}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded text-gray-600"
+                  margin="normal"
+                  variant="outlined"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Person color="action" />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{ mb: 2 }}
                 />
-              </div>
-            )}
+              )}
 
-            
-              <div>
-                
-                <input
-                  type="email"
-                  name="email"
-                  placeholder='Email*'
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border  text-gray-600"
-                />
-              </div>
-          
-
-            <div>
-             
-              <input
-                type="password"
-                name="password"
+              <TextField
+                fullWidth
+                name="email"
+                label="Email Address"
+                type="email"
+                placeholder="email@example.com"
+                value={formData.email}
                 onChange={handleChange}
-                placeholder='Password*'
-                className="w-full px-4 py-2 border text-gray-600"
+                margin="normal"
+                variant="outlined"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Email color="action" />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{ mb: 2 }}
               />
-            </div>
 
-            {!login && (
-              <div>
-                
-                <input
-                  type="password"
+              <TextField
+                fullWidth
+                name="password"
+                label="Password"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={handleChange}
+                margin="normal"
+                variant="outlined"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Lock color="action" />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{ mb: 2 }}
+              />
+
+              {!isLogin && (
+                <TextField
+                  fullWidth
                   name="confirmPassword"
+                  label="Confirm Password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={formData.confirmPassword}
                   onChange={handleChange}
-                  placeholder='Confirm Password*'
-                  className="w-full px-4 py-2 border text-gray-600"
+                  margin="normal"
+                  variant="outlined"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Lock color="action" />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{ mb: 3 }}
                 />
-              </div>
-            )}
+              )}
 
-            <button className="w-full bg-sky-950 text-white py-3 rounded">
-              {login ? "Login" : "Signup"}
-            </button>
-          </form>
+              <Button
+                fullWidth
+                type="submit"
+                variant="contained"
+                size="large"
+                disabled={loading}
+                sx={{
+                  py: 1.5,
+                  borderRadius: 2,
+                  fontSize: "1.1rem",
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  mt: 2,
+                  boxShadow: "0 4px 12px rgba(25, 118, 210, 0.3)"
+                }}
+              >
+                {loading ? <CircularProgress size={24} color="inherit" /> : (isLogin ? "Sign In" : "Sign Up")}
+              </Button>
+            </form>
 
-          <p className="text-sm text-gray-500 mt-6 text-center">
-            New User?
-            <button onClick={handleClick} className="text-blue-500 ml-1">
-              {login ? "Signup" : "Login"}
-            </button>
-          </p>
-        </div>
-      </div>
-    </div>
-  )
-}
+            <Box sx={{ mt: 4, textAlign: "center" }}>
+              <Typography variant="body2" color="text.secondary">
+                {isLogin ? "New to ELON COUTURE?" : "Already have an account?"}
+                <Button
+                  onClick={() => { setIsLogin(!isLogin); setError(""); }}
+                  sx={{ ml: 1, fontWeight: "bold", textTransform: "none" }}
+                >
+                  {isLogin ? "Create an account" : "Sign in here"}
+                </Button>
+              </Typography>
+            </Box>
+          </Box>
+        </Paper>
+      </Container>
+    </Box>
+  );
+};
 
-export default Login
+export default Login;

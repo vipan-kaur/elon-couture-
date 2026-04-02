@@ -4,7 +4,6 @@ import Searchprovider from './searchprovider';
 import { BrowserRouter ,Routes,Route} from 'react-router-dom';
 import Topbar from './components/layout/topbar'
 import Navbar from './components/layout/navbar'
-import Home from './components/pages/home';
 import Dropdown from './components/ui/dropdown';
 import Login  from './components/pages/login';
 import Footer from './components/layout/footer';
@@ -18,6 +17,14 @@ import Cart from './components/pages/cart';
 import ScrollToTop from './ScrollToTop';
 import Checkout from './components/checkout';
 import Success from './components/success';
+import Wishlist from './components/wishlist';
+import Slider  from './components/ui/swiper';
+import Kidproducts from './components/pages/kids/kidproducts';
+import Kids from './components/pages/kids/kids';
+import Home from './components/home/home';
+import Admin from './admin/admin';
+import Allproducts from './admin/allproducts';
+import Profile from './components/pages/profile';
 
 
 
@@ -28,7 +35,7 @@ const App = () => {
     <Searchprovider>
     <BrowserRouter>
      <ScrollToTop />
-    <Topbar/>
+     <Topbar/>
     <Navbar/>
     
     <Routes>
@@ -40,11 +47,18 @@ const App = () => {
            <Route path='/menproducts' element={<Menproducts/>}/>
            <Route path="/view/:id" element={<View/>}/>
           <Route path='/success' element={<Success/>}/>
-
+          <Route path='/wishlist' element={<Wishlist/>}/>
+          <Route path='/dropdown' element={<Dropdown/>}/>
            {/* women section */}
              <Route path='/women' element={<Women/>}/>
            <Route path='/womenproducts' element={<Womenproducts/>}/>
            <Route path="/womenview/:id" element={<Womenview/>}/>
+             <Route path='/swiper' element={<Slider/>}/>
+             <Route path='/Kids' element={<Kids/>}/>
+             <Route path="/Kidproducts" element={<Kidproducts/>}/>
+             <Route path='/admin'element={<Admin/>}/>
+             <Route path='/Allproducts' element={<Allproducts/>}/>
+             <Route path='/profile' element={<Profile/>}/>
     </Routes>
     <Footer/>
     </BrowserRouter>

@@ -15,7 +15,7 @@ const Topbar=()=>{
     },[])
     return(
         <>
-        <div className="w-full h-8 text-sm p-2 text-white bg-black px-[56px] flex justify-center items-center">
+        <div className="w-full h-8 text-sm p-2 text-white bg-black px-[56px] flex justify-center items-center fixed top-0 z-100">
             {text[index]}
         </div>
         </>

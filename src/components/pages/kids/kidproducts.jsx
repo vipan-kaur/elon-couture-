@@ -8,18 +8,18 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ProductCard from '../productCard';
 
-const Menproducts = () => {
-  const [MenItems, setMenItems] = useState([]); 
+const Kidproducts = () => {
+  const [kidItems, setkidItems] = useState([]); 
   const wishlist = useSelector((state) => state.cart.wishlistitem);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/products/men");
+        const response = await fetch("http://localhost:3000/api/products/kids");
         const data = await response.json();
         console.log("data",data)
-        setMenItems(data.AllProduct || data); 
+        setkidItems(data.AllProduct || data); 
       } catch (error) {
         console.error(error);
       }
@@ -29,10 +29,10 @@ const Menproducts = () => {
 
   return (
 
-    <ProductCard category={MenItems}></ProductCard>
+    <ProductCard category={kidItems}></ProductCard>
   )
 }
 
-export default Menproducts;
+export default Kidproducts;
 
 

@@ -3,7 +3,10 @@ import { Typography } from '@mui/material'
 import homevideo from "../../assets/elan.mp4"
 import womenhome from "../../assets/dress.jpeg"
 import menhome from "../../assets/menhome.jpeg"
-import Homesec1 from '../ui/homesec1'
+import Homesec1 from './homesec1'
+import Homesec2 from './homesec2'
+import kids from '../../assets/kidshomme.jpeg'
+import bag from '../../assets/bag.jpeg'
 const Home = () => {
   return (
    <>
@@ -21,6 +24,7 @@ const Home = () => {
    </div>
    
     <Homesec1 img1={womenhome} img2={menhome}/>
+    <Homesec2 img3={kids} img4={bag}/>
    </>
   )
 }
