@@ -4,14 +4,13 @@ import "swiper/css";
 import "swiper/css/navigation";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import banner1 from "../../assets/bag.jpeg";
-import banner2 from "../../assets/dress.jpeg";
-import banner3 from "../../assets/kidshomme.jpeg";
-import banner4 from "../../assets/shirt.jpeg";
-import banner5 from "../../assets/baghome.jpeg";
-import banner6 from "../../assets/kidhome.jpeg";
-import banner7 from "../../assets/shoe.png";
-
+import banner1 from "../../../assets/bag.jpeg";
+import banner2 from "../../../assets/dress.jpeg";
+import banner3 from "../../../assets/kidshomme.jpeg";
+import banner4 from "../../../assets/shirt.jpeg";
+import banner5 from "../../../assets/baghome.jpeg";
+import banner6 from "../../../assets/kidhome.jpeg";
+import banner7 from "../../../assets/shoe.png";
 import { Navigation, Autoplay } from "swiper/modules";
 
 const banner = [
@@ -24,7 +23,7 @@ const banner = [
   banner7,
 ];
 
-const Slider = () => {
+const Womenslider = () => {
   return (
 
 <>
@@ -74,4 +73,4 @@ const Slider = () => {
 </>  );
 };
 
-export default Slider;
+export default Womenslider;

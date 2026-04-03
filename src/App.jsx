@@ -4,7 +4,7 @@ import Searchprovider from './searchprovider';
 import { BrowserRouter ,Routes,Route} from 'react-router-dom';
 import Topbar from './components/layout/topbar'
 import Navbar from './components/layout/navbar'
-import Dropdown from './components/ui/dropdown';
+// import Dropdown from './components/ui/dropdown';
 import Login  from './components/pages/login';
 import Footer from './components/layout/footer';
 import Men from './components/pages/men/men';
@@ -25,8 +25,9 @@ import Home from './components/home/home';
 import Admin from './admin/admin';
 import Allproducts from './admin/allproducts';
 import Profile from './components/pages/profile';
-
-
+import Womendrop from './components/pages/women/womendrop';
+import Dropdown from './components/pages/men/dropdown';
+import Exploreall from './components/pages/explore';
 
 const App = () => {
   return (
@@ -59,6 +60,8 @@ const App = () => {
              <Route path='/admin'element={<Admin/>}/>
              <Route path='/Allproducts' element={<Allproducts/>}/>
              <Route path='/profile' element={<Profile/>}/>
+              <Route path='/Womendrop' element={<Womendrop/>}/>
+              <Route path='/Exploreall' element={<Exploreall/>}/>
     </Routes>
     <Footer/>
     </BrowserRouter>

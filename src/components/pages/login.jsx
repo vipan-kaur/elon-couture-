@@ -1,284 +1,242 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  Paper,
-  Container,
-  Tab,
-  Tabs,
-  InputAdornment,
-  IconButton,
-  Alert,
-  CircularProgress
-} from "@mui/material";
-import {
-  Email,
-  Lock,
-  Person,
-  Visibility,
-  VisibilityOff
-} from "@mui/icons-material";
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 
 const Login = () => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const [formData, setFormData] = useState({
+  const [login, setLogin] = useState(true)
+const[verifyotp,setverifyotp]=useState(false)
+  const [formdata, setFormdata] = useState({
     name: "",
     email: "",
     password: "",
-    confirmPassword: ""
-  });
+    PhoneNo: "",
+    otp:""
+  })
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  const handleModeChange = (event, newValue) => {
-    setIsLogin(newValue === 0);
-    setError("");
-  };
+  const handleClick = () => {
+    setLogin(prev => !prev)
+  }
 
   const handleChange = (e) => {
-    setFormData(prev => ({
+    const { name, value } = e.target
+    setFormdata(prev => ({
       ...prev,
-      [e.target.name]: e.target.value
-    }));
-    if (error) setError("");
-  };
+      [name]: value 
+      
+    }))
+  }
 
-  const validate = () => {
-    if (isLogin) {
-      if (!formData.email || !formData.password) {
-        setError("Email and password are required");
-        return false;
-      }
-    } else {
-      if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
-        setError("All fields are required");
-        return false;
-      }
-      if (formData.password !== formData.confirmPassword) {
-        setError("Passwords do not match");
-        return false;
-      }
-    }
-    return true;
-  };
+const handleSubmit =async (e) => {
+  e.preventDefault()
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validate()) return;
 
-    setLoading(true);
-    setError("");
+if (!login) {
+  if (!formdata.name || !formdata.email || !formdata.password || !formdata.PhoneNo) {
+    alert("All fields required");
+   
+  }
 
-    try {
-      const url = isLogin
-        ? "http://localhost:3000/api/auth/login"
-        : "http://localhost:3000/api/auth/signup";
 
-      const payload = isLogin
-        ? { email: formData.email, password: formData.password }
-        : { name: formData.name, email: formData.email, password: formData.password };
+  try {
+    const response = await fetch("http://localhost:3000/api/auth/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type":"application/json",
+                },
+      body: JSON.stringify({ 
+        name: formdata.name,
+        email: formdata.email,
+        password: formdata.password,
+        PhoneNo: formdata.PhoneNo
+      }),
+    });
 
-      const response = await axios.post(url, payload);
+    const data = await response.json();
 
-      if (isLogin) {
-        // Store user data if returned
-        localStorage.setItem("user", JSON.stringify(response.data.user || response.data));
-        navigate("/profile");
-      } else {
-        alert("Signup successful! Please login.");
-        setIsLogin(true);
-        setFormData(prev => ({ ...prev, password: "", confirmPassword: "" }));
-      }
-    } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.message || "Authentication failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    if (!response.ok) {
+      alert(data.message || "Signup failed");
+      return;
+    } 
+     
+
+    alert("Signup successful");
+    setLogin(true);
+
+  } catch (error) {
+    console.error(error);
+    alert("Server error");
+  }
+
+  return;
+}
+
+
+  // ===== LOGIN =====
+  if (!formdata.email || !formdata.password) {
+    alert("All fields required")
+    return
+  }
+
+ try{
+  const response= await fetch("http://localhost:3000/api/auth/login",{
+    method:"POST",
+    headers:{
+      "content-type":"application/json"
+    },
+    body:JSON.stringify({
+     email: formdata.email,
+     password:formdata.password
+    })
+    
+  })
+  const data = await response.json()
+  if(!response.ok){
+    alert(data.message|| "invalid email or password")
+    return;
+  }
+  alert("otp sent")
+  setverifyotp(true)
+ }catch(error){
+  console.log(error.message)
+ }
+}
+
+ const handleverifyOtp =async(e)=>{
+  e.preventDefault();
+  if(!formdata.otp){
+    alert("please enter OTP")
+    return;
+  }
+try{
+  const response=await fetch("http://localhost:3000/api/auth/verify",{
+    method:"POST",
+  headers:{
+    "content-type":"application/json"
+  },
+  body:JSON.stringify({
+    otp:formdata.otp,
+    email:formdata.email
+  })
+  })
+  const data=await response.json()
+  if(!response.ok){
+    alert(data.message || "otp verification failed")
+    return;
+  }
+
+const userId=data.user._id
+  alert("otp verified successfully")
+  navigate(`/profile/${userId}`);
+
+}catch(error){
+  console.log(error.message)
+  alert("server error")
+}
+ }
+
+
+
+
 
   return (
-    <Box
-      sx={{
-        minHeight: "90vh",
-        display: "flex",
-        alignItems: "center",
-        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
-        py: 4
-      }}
-    >
-      <Container maxWidth="sm">
-        <Paper
-          elevation={10}
-          sx={{
-            borderRadius: 4,
-            overflow: "hidden",
-            backdropFilter: "blur(10px)",
-            backgroundColor: "rgba(255, 255, 255, 0.9)"
-          }}
-        >
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <Tabs
-              value={isLogin ? 0 : 1}
-              onChange={handleModeChange}
-              variant="fullWidth"
-              textColor="primary"
-              indicatorColor="primary"
+   <div className=" relative min-h-screen mt-2 flex items-center justify-center px-4">
+    <Link to="/admin"> <button className='absolute top-20 right-50  bg-black text-white px-3 rounded'> Admin</button></Link>
+  <div className="  flex flex-col md:flex-row w-full max-w-4xl">
+   
+
+    <div className="relative bg-black text-white p-6 md:p-10 w-full md:w-1/2">
+      <p className="text-sm font-semibold mb-6">COMPANY LOGO</p>
+      <h1 className="text-3xl md:text-4xl font-bold mb-4">Welcome to...</h1>
+      <p className="opacity-50 max-w-sm">
+        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+      </p>
+    </div>
+
+    <div className="w-full md:w-1/2 p-6 md:p-10">
+      <h2 className="text-2xl md:text-3xl font-semibold text-black mb-2">
+        {login ? "Login" : "Signup"}
+      </h2>
+
+      <form className="space-y-5" onSubmit={handleSubmit}>
+
+        {!login && (
+          <div>
+            <label className="text-gray-600">User Name</label>
+            <input
+              type="text"
+              name="name"
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded"
+            />
+          </div>
+        )}
+
+        <div>
+          <label className="text-gray-600">Email</label>
+          <input
+            type="email"
+            name="email"
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded"
+          />
+        </div>
+
+        <div>
+          <label className="text-gray-600">Password</label>
+          <input
+            type="password"
+            name="password"
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded"
+          />
+        </div>
+
+        {verifyotp && (
+          <div className="otp-section">
+            <label className="text-gray-600">OTP</label>
+            <input
+              type="number"
+              name="otp"
+              value={formdata.otp}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded"
+            />
+            <button
+              onClick={handleverifyOtp}
+              className="w-full bg-black text-white py-2 mt-2 rounded"
             >
-              <Tab label="Login" sx={{ py: 3, fontWeight: "bold", fontSize: "1.1rem" }} />
-              <Tab label="Signup" sx={{ py: 3, fontWeight: "bold", fontSize: "1.1rem" }} />
-            </Tabs>
-          </Box>
+              Verify OTP
+            </button>
+          </div>
+        )}
 
-          <Box sx={{ p: { xs: 3, md: 5 } }}>
-            <Typography variant="h4" fontWeight="bold" color="primary.dark" gutterBottom align="center">
-              {isLogin ? "Welcome Back" : "Create Account"}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 4 }}>
-              {isLogin ? "Please enter your details to sign in" : "Join us to get started with ELON COUTURE"}
-            </Typography>
+        {!login && (
+          <div>
+            <label className="text-gray-600">Phone NO</label>
+            <input
+              type="Number"
+              name="PhoneNo"
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded"
+            />
+          </div>
+        )}
 
-            {error && (
-              <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
-                {error}
-              </Alert>
-            )}
+      {!verifyotp &&  <button className="w-full bg-black text-white py-3 rounded">
+          {login ? "Login" : "Signup"}
+        </button>}
+      </form>
+{!verifyotp &&
+      <p className="text-sm text-gray-500 mt-6 text-center">
+     <span>New User?</span>
+        <button onClick={handleClick} className="text-blue-500 ml-1">
+          {login ? "Signup" : "Login"}
+        </button>
+      </p>}
+    </div>
+  </div>
+</div>)
+}
 
-            <form onSubmit={handleSubmit}>
-              {!isLogin && (
-                <TextField
-                  fullWidth
-                  name="name"
-                  label="Full Name"
-                  placeholder="John Doe"
-                  value={formData.name}
-                  onChange={handleChange}
-                  margin="normal"
-                  variant="outlined"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Person color="action" />
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{ mb: 2 }}
-                />
-              )}
-
-              <TextField
-                fullWidth
-                name="email"
-                label="Email Address"
-                type="email"
-                placeholder="email@example.com"
-                value={formData.email}
-                onChange={handleChange}
-                margin="normal"
-                variant="outlined"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Email color="action" />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{ mb: 2 }}
-              />
-
-              <TextField
-                fullWidth
-                name="password"
-                label="Password"
-                type={showPassword ? "text" : "password"}
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={handleChange}
-                margin="normal"
-                variant="outlined"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Lock color="action" />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{ mb: 2 }}
-              />
-
-              {!isLogin && (
-                <TextField
-                  fullWidth
-                  name="confirmPassword"
-                  label="Confirm Password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  margin="normal"
-                  variant="outlined"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Lock color="action" />
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{ mb: 3 }}
-                />
-              )}
-
-              <Button
-                fullWidth
-                type="submit"
-                variant="contained"
-                size="large"
-                disabled={loading}
-                sx={{
-                  py: 1.5,
-                  borderRadius: 2,
-                  fontSize: "1.1rem",
-                  textTransform: "none",
-                  fontWeight: "bold",
-                  mt: 2,
-                  boxShadow: "0 4px 12px rgba(25, 118, 210, 0.3)"
-                }}
-              >
-                {loading ? <CircularProgress size={24} color="inherit" /> : (isLogin ? "Sign In" : "Sign Up")}
-              </Button>
-            </form>
-
-            <Box sx={{ mt: 4, textAlign: "center" }}>
-              <Typography variant="body2" color="text.secondary">
-                {isLogin ? "New to ELON COUTURE?" : "Already have an account?"}
-                <Button
-                  onClick={() => { setIsLogin(!isLogin); setError(""); }}
-                  sx={{ ml: 1, fontWeight: "bold", textTransform: "none" }}
-                >
-                  {isLogin ? "Create an account" : "Sign in here"}
-                </Button>
-              </Typography>
-            </Box>
-          </Box>
-        </Paper>
-      </Container>
-    </Box>
-  );
-};
-
-export default Login;
+export default Login

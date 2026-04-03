@@ -73,8 +73,10 @@ import { Badge } from '@mui/material';
 import { useSelector } from 'react-redux';
 
 import { searchcontext } from '../../searchprovider';
-import Dropdown from '../ui/dropdown';
+import Dropdown from '../pages/men/dropdown';
 import Topbar from './topbar';
+import Womendrop from '../pages/women/womendrop';
+import Kidsdrop from '../pages/kids/kidsdrop';
 const Navbar = () => {
   const [ menuOpen, setMenuOpen] = useState(false);
   const[showsearchbar,setshowsearchbar]= useState(false);
@@ -102,9 +104,25 @@ const Navbar = () => {
       group-hover:opacity-100 group-hover:visible group-hover:translate-y-0
       transition-all duration-700 ease-out'><Dropdown/></div>
           </li></Link>
-       <Link to="/women"> <li className='block hover:underline underline-offset-1 cursor-pointer hover:text-black'>WOMEN</li></Link>
-       <Link to="/Kids"> <li className='hover:underline underline-offset-1 cursor-pointer hover:text-black'>KIDS & BABY</li></Link>
-        <li className='hover:underline underline-offset-1 cursor-pointer hover:text-black'>EXPLORE</li>
+      
+      
+       <Link to="/women"> 
+       <li className='block group  hover:underline underline-offset-1 cursor-pointer hover:text-black'>WOMEN
+  <div className=' fixed left-0 top-[96px] w-screen z-50
+      opacity-0 invisible -translate-y-5
+      group-hover:opacity-100 group-hover:visible group-hover:translate-y-0
+      transition-all duration-700 ease-out'><Womendrop/></div>
+     
+       </li>
+
+       </Link>
+       <Link to="/Kids"> <li className=' block group hover:underline underline-offset-1 cursor-pointer hover:text-black'>KIDS & BABY
+        <div className=' fixed left-0 top-[96px] w-screen z-50
+      opacity-0 invisible -translate-y-5
+      group-hover:opacity-100 group-hover:visible group-hover:translate-y-0
+      transition-all duration-700 ease-out'><Kidsdrop/></div>
+        </li></Link>
+       <Link to='/Exploreall'> <li className='hover:underline underline-offset-1 cursor-pointer hover:text-black'>EXPLORE</li></Link>
       </ul>
 
       {/* Icons */}

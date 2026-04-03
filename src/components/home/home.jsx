@@ -7,6 +7,7 @@ import Homesec1 from './homesec1'
 import Homesec2 from './homesec2'
 import kids from '../../assets/kidshomme.jpeg'
 import bag from '../../assets/bag.jpeg'
+import Slider from '../ui/swiper'
 const Home = () => {
   return (
    <>
@@ -25,6 +26,9 @@ const Home = () => {
    
     <Homesec1 img1={womenhome} img2={menhome}/>
     <Homesec2 img3={kids} img4={bag}/>
+    <div className='my-20'>
+    <Slider/>
+    </div>
    </>
   )
 }

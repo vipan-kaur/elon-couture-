@@ -1,7 +1,7 @@
  import React from 'react'
-import img1 from '../../assets/menpg/menslide1.png';
-import img2 from '../../assets/menpg/menslide2.png'
-import img3 from '../../assets/menpg/menslide3.png'
+import img1 from '../../../assets/menpg/menslide1.png';
+import img2 from '../../../assets/menpg/menslide2.png'
+import img3 from '../../../assets/menpg/menslide3.png'
 const Dropdown = () => {
   const h3="absolute bottom-15 left-1/2 -translate-x-1/2 whitespace-nowrap text-white text-lg"
   const p='absolute underline text-white cursor-pointer text-sm bottom-10  left-14'

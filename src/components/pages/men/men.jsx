@@ -6,6 +6,7 @@ import menslide3 from '../../../assets/menpg/menslide3.png'
 import { Link } from 'react-router-dom'
 import { useEffect } from "react";
 import { initCarousels } from "flowbite";
+import Menslider from './menslider'
 // import { searchcontext } from '../../../searchprovider'
 const Men = () => {
 
@@ -218,7 +219,7 @@ Discover premium menswear designed for the modern man. From timeless essentials 
   </div>
 </div>
 
-
+<Menslider/>
    </>
   )
 }

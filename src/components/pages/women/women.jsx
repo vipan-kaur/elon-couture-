@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom'
 import dressimg from '../../../assets/dress.jpeg'
 import { useEffect } from "react";
 import { initCarousels } from "flowbite";
+import Womenslider from './womenslider'
 const Women = () => {
     useEffect(() => {
       initCarousels();
@@ -154,7 +155,7 @@ const Women = () => {
 
   </div>
 </div>
-
+<Womenslider/>
 
    </>
   )
